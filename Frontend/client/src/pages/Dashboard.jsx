@@ -50,6 +50,26 @@ const Dashboard = () => {
     navigate(`/edit-agent/${id}`);
   };
 
+
+  // ✅ Remove all tasks from agent
+  const handleRemoveTasks = async (id) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to remove all tasks for this agent?"
+      )
+    )
+      return;
+
+    try {
+      await axios.delete(`/agents/${id}/tasks`);
+      fetchAgents(); // ✅ Refresh after deletion
+      alert("All tasks removed successfully!");
+    } catch (err) {
+      console.error("Failed to remove tasks:", err.message);
+      alert("Failed to remove tasks");
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -100,7 +120,9 @@ const Dashboard = () => {
               <Typography variant="h6" fontWeight="bold" color="#1e88e5">
                 {agent.name}
               </Typography>
-              <Typography>{agent.email} - {agent.mobile}</Typography>
+              <Typography>
+                {agent.email} - {agent.mobile}
+              </Typography>
 
               {/* ✅ Task List with Background Gradient */}
               {agent.tasks.length > 0 ? (
@@ -119,7 +141,10 @@ const Dashboard = () => {
                   }}
                 >
                   {agent.tasks.map((task, index) => (
-                    <Typography key={index} sx={{ fontSize: "16px", fontWeight: "500" }}>
+                    <Typography
+                      key={index}
+                      sx={{ fontSize: "16px", fontWeight: "500" }}
+                    >
                       ➡️ {task.firstName} - {task.phone} - {task.notes}
                     </Typography>
                   ))}
@@ -154,6 +179,18 @@ const Dashboard = () => {
                 >
                   Delete
                 </Button>
+                <Button
+                  onClick={() => handleRemoveTasks(agent._id)}
+                  variant="contained"
+                  color="warning"
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: "8px",
+                    padding: "5px 16px",
+                  }}
+                >
+                  Remove Tasks
+                </Button>
               </Box>
             </Box>
           ))}
@@ -162,8 +199,9 @@ const Dashboard = () => {
         !loading && <Typography color="#ffffff">No agents found</Typography>
       )}
 
-      {/* ✅ Upload Link */}
-      <Box mt={3}>
+      {/* ✅ Upload + Create Buttons */}
+      <Box mt={3} display="flex" gap={2}>
+        {/* ✅ Upload CSV Button */}
         <Link to="/upload" style={{ textDecoration: "none" }}>
           <Button
             variant="contained"
@@ -172,9 +210,26 @@ const Dashboard = () => {
               textTransform: "none",
               fontWeight: "bold",
               borderRadius: "8px",
+              padding: "10px 20px",
             }}
           >
             Upload CSV
+          </Button>
+        </Link>
+
+        {/* ✅ Create Agent Button */}
+        <Link to="/create-agent" style={{ textDecoration: "none" }}>
+          <Button
+            variant="contained"
+            color="success"
+            sx={{
+              textTransform: "none",
+              fontWeight: "bold",
+              borderRadius: "8px",
+              padding: "10px 20px",
+            }}
+          >
+            Create Agent
           </Button>
         </Link>
       </Box>

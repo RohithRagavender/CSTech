@@ -84,4 +84,16 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 
+// ✅ Remove all tasks from agent
+router.delete('/:id/tasks', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Agent.findByIdAndUpdate(id, { $set: { tasks: [] } });
+    res.status(200).json({ message: 'All tasks removed successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to remove tasks' });
+  }
+});
+
+
 module.exports = router;
